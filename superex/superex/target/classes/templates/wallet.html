@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>E-Wallet</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI';
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .wallet-box {
+            background: #ecf7ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #218838;
+        }
+
+        .history {
+            margin-top: 25px;
+        }
+
+        .txn {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .credit {
+            color: green;
+        }
+
+        .debit {
+            color: red;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal button {
+            margin: 10px;
+            padding: 8px 15px;
+        }
+    </style>
+
+    <script>
+        function openPopup() {
+            let amount = document.getElementById("amount").value;
+
+            if (!amount || amount <= 0) {
+                alert("Enter valid amount");
+                return;
+            }
+
+            document.getElementById("confirmAmount").innerText = amount;
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        function confirmTransfer() {
+            document.getElementById("walletForm").submit();
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div th:replace="header :: header('E-Wallet')"></div>
+
+    <div class="card">
+
+        <!-- MESSAGES -->
+        <div th:if="${success}" style="color:green;" th:text="${success}"></div>
+        <div th:if="${error}" style="color:red;" th:text="${error}"></div>
+
+        <!-- BALANCE -->
+        <div class="wallet-box">
+            Wallet Balance: ₹<span th:text="${balance}"></span>
+        </div>
+
+        <!-- FORM -->
+        <form id="walletForm" method="post" action="/ewallet/withdraw">
+
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" required />
+
+            <br><br>
+
+            <!-- POPUP TRIGGER -->
+            <button type="button" class="btn" onclick="openPopup()">
+                Transfer to Bank
+            </button>
+        </form>
+
+        <!-- HISTORY -->
+        <div class="history">
+            <h3>Transaction History</h3>
+
+            <div th:if="${#lists.isEmpty(transactions)}">
+                No transactions found
+            </div>
+
+            <div th:each="t : ${transactions}" class="txn">
+                <div>
+                    <span th:text="${t.type}"></span>
+                </div>
+
+                <div th:classappend="${t.type == 'CREDIT'} ? 'credit' : 'debit'">
+                    ₹<span th:text="${t.amount}"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Transfer</h3>
+        <p>Transfer ₹<span id="confirmAmount"></span> to bank?</p>
+
+        <button onclick="confirmTransfer()">Yes</button>
+        <button onclick="closePopup()">Cancel</button>
+    </div>
+</div>
+
+</body>
+</html>

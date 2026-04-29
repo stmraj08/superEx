@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Plans</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .meta {
+            color: #777;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .coupon {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .empty {
+            text-align: center;
+            color: #888;
+            margin-top: 40px;
+            font-size: 16px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div th:replace="header :: header('My Purchased Plans')"></div>
+
+    <!-- PAGE TITLE -->
+    <div class="page-title">📘 My Learning Plans</div>
+
+    <!-- EMPTY STATE -->
+    <div th:if="${#lists.isEmpty(plans)}" class="empty">
+        <div class="empty-icon">📭</div>
+        You haven't purchased any plans yet.
+    </div>
+
+    <!-- PLAN CARDS -->
+    <div th:each="p : ${plans}" class="card">
+
+        <!-- LEFT -->
+        <div class="left">
+            <div class="course-title" th:text="${p.courseName}">Course Name</div>
+
+            <div class="meta">
+                Purchased By: <span th:text="${p.userEmail}"></span>
+            </div>
+
+            <div class="meta">
+                Coupon: 
+                <span th:text="${p.coupon != 'NA' ? p.coupon : 'No Coupon'}"></span>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right">
+
+            <div class="price">
+                ₹<span th:text="${p.finalPrice}"></span>
+            </div>
+
+          <!--  <div class="badge success">
+                Active
+            </div>-->
+
+            <div th:if="${p.coupon != 'NA'}" class="badge coupon">
+                Discount Applied
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

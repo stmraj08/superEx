@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Transactions</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+/* SECTION TITLE */
+.section-title {
+    margin: 25px 0 10px;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* CARD */
+.card {
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* LEFT */
+.left {
+    flex: 1;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.sub {
+    font-size: 12px;
+    color: #777;
+    margin-top: 3px;
+}
+
+/* CENTER (AMOUNT FIXED) */
+.center {
+    width: 150px;
+    text-align: center;
+    transform: translateX(-20px); /* balanced left shift */
+}
+
+.amount {
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+.credit {
+    color: #28a745;
+}
+
+.debit {
+    color: #dc3545;
+}
+
+/* RIGHT */
+.right {
+    width: 120px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* BADGE */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* PROFESSIONAL SUCCESS BADGE */
+.success {
+    background: #e6f4ea;
+    color: #1e7e34;
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 1px 3px rgba(40, 167, 69, 0.15);
+}
+
+/* EMPTY STATE */
+.empty {
+    text-align: center;
+    color: #888;
+    margin-top: 25px;
+}
+
+/* SUCCESS MESSAGE */
+.msg-success {
+    background: #e6f4ea;
+    padding: 12px;
+    border-radius: 8px;
+    color: #1e7e34;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid #c3e6cb;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div th:replace="header :: header('Transaction History')"></div>
+
+    <!-- SUCCESS MESSAGE -->
+    <div th:if="${success}" class="msg-success">
+        <span th:text="${success}"></span>
+    </div>
+
+    <!-- ================= PURCHASE HISTORY ================= -->
+    <div class="section-title">📘 Course Purchases</div>
+
+    <div th:if="${transactions == null or #lists.isEmpty(transactions)}" class="empty">
+        No course transactions found.
+    </div>
+
+    <div th:each="t : ${transactions}" class="card">
+
+        <!-- LEFT -->
+        <div class="left">
+            <div class="title" th:text="${t.courseName}"></div>
+            <div class="sub">Course Purchase</div>
+        </div>
+
+        <!-- CENTER -->
+        <div class="center">
+            <div class="amount debit">
+                - ₹<span th:text="${t.finalPrice}"></span>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right">
+            <div class="badge success">SUCCESS</div>
+        </div>
+
+    </div>
+
+    <!-- ================= WALLET HISTORY ================= -->
+    <div class="section-title">💰 Wallet History</div>
+
+    <div th:if="${walletTxns == null or #lists.isEmpty(walletTxns)}" class="empty">
+        No wallet transactions found.
+    </div>
+
+    <div th:each="w : ${walletTxns}" class="card">
+
+        <!-- LEFT -->
+        <div class="left">
+            <div class="title" th:text="${w.remark}"></div>
+
+            <div class="sub"
+                 th:text="${w.createdAt != null ? #temporals.format(w.createdAt, 'dd MMM yyyy hh:mm a') : ''}">
+            </div>
+
+            <!-- BANK DETAILS (ONLY FOR DEBIT) -->
+            <div class="sub"
+                 th:if="${w.type == 'DEBIT' and w.accountNumber != null}">
+
+                To: <span th:text="${w.bankName}"></span>
+                (A/C ****
+                <span th:text="${#strings.length(w.accountNumber) > 4 ? 
+                    #strings.substring(w.accountNumber, #strings.length(w.accountNumber)-4) 
+                    : w.accountNumber}">
+                </span>)
+            </div>
+        </div>
+
+        <!-- CENTER -->
+        <div class="center">
+            <div class="amount"
+                 th:classappend="${w.type == 'CREDIT'} ? 'credit' : 'debit'">
+
+                <span th:text="${w.type == 'CREDIT' ? '+ ₹' : '- ₹'}"></span>
+                <span th:text="${w.amount}"></span>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right">
+            <div class="badge success" th:text="${w.status}"></div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

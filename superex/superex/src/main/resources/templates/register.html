@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Register - SuperEx</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+/* CARD */
+.card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 420px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 9px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    background: #48bb78;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #38a169;
+}
+
+/* PASSWORD BAR */
+#strengthBar {
+    height: 6px;
+    width: 100%;
+    background: #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+#strength {
+    height: 100%;
+    width: 0%;
+    transition: 0.3s;
+}
+
+/* EYE */
+.eye {
+    position: absolute;
+    right: 10px;
+    top: 36px;
+    cursor: pointer;
+}
+
+/* LIVE TEXT */
+#pwdMsg {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* ERROR */
+.error {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* TOAST POPUP */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    font-weight: 600;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.5s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* LOGIN LINK */
+.login-link {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #38a169;
+    font-weight: 700;
+    text-decoration: none;
+}
+</style>
+
+<script>
+const passwordPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&]).{8,}$/;
+
+function validateForm() {
+    let pwd = document.getElementById("password").value;
+    let cpwd = document.getElementById("confirmPassword").value;
+    let aadhaar = document.forms["regForm"]["aadhaar"].value;
+    let dob = document.forms["regForm"]["dob"].value;
+
+    if (!/^[0-9]{12}$/.test(aadhaar)) {
+        alert("Aadhaar must be 12 digits");
+        return false;
+    }
+
+    let age = new Date().getFullYear() - new Date(dob).getFullYear();
+    if (age < 18) {
+        alert("Minimum age is 18");
+        return false;
+    }
+
+    if (!passwordPattern.test(pwd)) {
+        alert("Password must be 8+ chars, 1 uppercase, 1 number, 1 special char");
+        return false;
+    }
+
+    if (pwd !== cpwd) {
+        alert("Passwords do not match");
+        return false;
+    }
+
+    return true;
+}
+
+/* STRENGTH */
+function checkStrength() {
+    let pwd = document.getElementById("password").value;
+    let bar = document.getElementById("strength");
+
+    let s = 0;
+    if (pwd.length >= 8) s++;
+    if (/[A-Z]/.test(pwd)) s++;
+    if (/[0-9]/.test(pwd)) s++;
+    if (/[@$!%*?&]/.test(pwd)) s++;
+
+    bar.style.width = (s * 25) + "%";
+    bar.style.background = s <= 1 ? "red" : s <= 3 ? "orange" : "green";
+}
+
+/* MATCH */
+function checkMatch() {
+    let pwd = document.getElementById("password").value;
+    let cpwd = document.getElementById("confirmPassword").value;
+    let msg = document.getElementById("pwdMsg");
+
+    if (!cpwd) return msg.innerHTML = "";
+
+    msg.style.color = pwd === cpwd ? "green" : "red";
+    msg.innerHTML = pwd === cpwd ? "✔ Password matched" : "❌ Not matching";
+}
+
+/* TOGGLE */
+function togglePassword(id) {
+    let f = document.getElementById(id);
+    f.type = f.type === "password" ? "text" : "password";
+}
+
+/* TOAST */
+window.onload = function () {
+    let msg = document.getElementById("toastMsg");
+
+    if (msg && msg.innerText.trim() !== "") {
+        let toast = document.getElementById("toast");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+};
+</script>
+
+</head>
+
+<body>
+
+<!-- SUCCESS POPUP -->
+<div id="toast" class="toast">
+    <span id="toastMsg" th:text="${success}"></span>
+</div>
+
+<div class="card">
+
+<h2>Register</h2>
+
+<div class="error" th:if="${error}">
+    <span th:text="${error}"></span>
+</div>
+
+<form name="regForm" method="post" action="/user/register" onsubmit="return validateForm()">
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input name="fullName" required>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input name="email" type="email" required>
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input id="password" name="password" type="password"
+               onkeyup="checkStrength(); checkMatch();" required>
+        <span class="eye" onclick="togglePassword('password')">👁</span>
+        <div id="strengthBar"><div id="strength"></div></div>
+    </div>
+
+    <div class="form-group">
+        <label>Confirm Password</label>
+        <input id="confirmPassword" type="password"
+               onkeyup="checkMatch()" required>
+        <span class="eye" onclick="togglePassword('confirmPassword')">👁</span>
+        <div id="pwdMsg"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Mobile</label>
+        <input name="mobile" required>
+    </div>
+
+    <div class="form-group">
+        <label>Date of Birth</label>
+        <input name="dob" type="date" required>
+    </div>
+
+    <div class="form-group">
+        <label>Aadhaar</label>
+        <input name="aadhaar" required>
+    </div>
+
+    <div class="form-group">
+        <label>Country</label>
+        <select name="country">
+            <option>India</option>
+            <option>UAE</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>City</label>
+        <input name="city">
+    </div>
+
+    <button type="submit">Register</button>
+
+</form>
+
+<!-- ✅ LOGIN LINK -->
+<div class="login-link">
+    Already have an account? <a href="/user">Login here</a>
+</div>
+
+</div>
+
+</body>
+</html>

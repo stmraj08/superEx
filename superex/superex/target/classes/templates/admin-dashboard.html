@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - SuperEx</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .logout {
+            background: #ff4d4d;
+            padding: 8px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .container {
+            padding: 30px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .course-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .course-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .course-meta {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .course-desc {
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h2>Admin Dashboard</h2>
+    <a href="/logout" class="logout">Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+    <!-- ADD COURSE -->
+    <div class="card">
+        <h3>Add New Course</h3>
+
+        <form method="post" action="/admin/add">
+
+            <div class="form-group">
+                <label>Course Name</label>
+                <input name="name" placeholder="Enter course name" required>
+            </div>
+
+            <!-- ✅ NEW DESCRIPTION FIELD -->
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" placeholder="Enter course description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Price</label>
+                <input name="price" type="number" placeholder="Enter price" required>
+            </div>
+
+            <div class="form-group">
+                <label>Coupon Code</label>
+                <input name="coupon" placeholder="e.g. 10 (for 10% OFF)">
+            </div>
+
+            <button type="submit">Add Course</button>
+        </form>
+    </div>
+
+    <!-- COURSE LIST -->
+    <div class="card">
+        <h3>Available Courses</h3>
+
+        <div th:if="${#lists.isEmpty(courses)}">
+            <p>No courses available</p>
+        </div>
+
+        <div th:each="c : ${courses}" class="course-item">
+            <div class="course-name" th:text="${c.name}"></div>
+
+            <!-- ✅ SHOW DESCRIPTION -->
+            <div class="course-desc" th:text="${c.description}">
+                Course description here
+            </div>
+
+            <div class="course-meta">
+                Price: ₹<span th:text="${c.price}"></span> |
+                Coupon: <span th:text="${c.coupon}"></span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

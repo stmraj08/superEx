@@ -1,0 +1,25 @@
+<div style="max-width: 600px; margin: 50px auto; font-family: Arial;">
+    
+    <h2 style="text-align:center;">Payment Page</h2>
+
+    <div style="border:1px solid #ddd; padding:20px; border-radius:10px;">
+        
+        <h3>
+            <span th:text="${course.name}">Course Name</span>
+        </h3>
+
+        <p>
+            <strong>Price:</strong> ₹<span th:text="${course.price}">0</span>
+        </p>
+
+        <!-- Dummy Payment Form -->
+        <form method="post" action="/pay">
+            <input type="hidden" name="courseId" th:value="${course.id}" />
+
+            <button type="submit"
+                    style="width:100%; padding:10px; background-color:green; color:white; border:none; border-radius:5px;">
+                Pay Now
+            </button>
+        </form>
+    </div>
+</div>

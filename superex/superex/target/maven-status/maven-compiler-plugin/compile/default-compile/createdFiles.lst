@@ -1,0 +1,11 @@
+com\client\superex\controller\AppController.class
+com\client\superex\SuperexApplication.class
+com\client\superex\repository\AdminRepo.class
+com\client\superex\repository\TransactionRepo.class
+com\client\superex\entity\Course.class
+com\client\superex\repository\PurchaseRepo.class
+com\client\superex\entity\Purchase.class
+com\client\superex\repository\UserRepo.class
+com\client\superex\entity\Admin.class
+com\client\superex\entity\User.class
+com\client\superex\repository\CourseRepo.class

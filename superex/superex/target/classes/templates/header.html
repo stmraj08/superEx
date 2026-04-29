@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="header(title)">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+        <!-- Dynamic Page Title -->
+        <h2 style="color:#2c3e50; margin:0;" th:text="${title}">Title</h2>
+
+        <!-- MENU -->
+        <div style="background:#2c3e50; padding:10px; border-radius:8px;">
+            <a href="/courses" style="color:white; margin-right:15px;">Home</a>
+            <a href="/profile" style="color:white; margin-right:15px;">User Profile</a>
+            <a href="/ewallet" style="color:white; margin-right:15px;">E-Wallet</a>
+            <a href="/myplan" style="color:white; margin-right:15px;">My Plan</a>
+            <a href="/transactions" style="color:white;">Transactions</a>
+        </div>
+
+        <!-- LOGOUT -->
+        <form method="get" action="/logout" style="margin:0;">
+            <button type="submit"
+                    style="background-color:#dc3545; color:white; border:none; 
+                           padding:8px 16px; border-radius:5px; cursor:pointer;">
+                Logout
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
